@@ -15,7 +15,18 @@ def vowel_search(word:str) -> set:
     #return bool(found)
     #for vowel in found:
     #    print (vowel)
- 
- 
-#word = input('Forneça uma palavra para procurar por vogais: ')
-vowel_search('abacaxi')
+
+
+def search4letters(phrase:str, letters:str) -> set:
+    """ Retorna um conjunto de letras encontradas na frase. """
+    # Transforam o argumento letters em um objeto conjunto
+    return set(letters).intersection(set(phrase))
+
+
+#------------------------------------------------------------------------
+
+x = vowel_search('abacaxi')
+print(x)
+
+a = search4letters("Estou estudando Python", "tuh")
+print(a)
