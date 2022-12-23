@@ -4,22 +4,40 @@ from vsearch import search4letters
 app = Flask(__name__)
 
 
+# O argumento 'req' é atribuido ao objeto de requisição/solicitação do flask,
+# enquanto que, o argumento 'res'é atribuido aos resultados da chamada
+# da função search4letters.
+# "flask_request" é apenas uma notação de argumento da função,
+# documentação, o interpretador ignora, não executa
+def log_request(req: 'flask_request', res: str) -> None:
+    ''' Criar/Salva logs de requisição e resultados '''
+    with open('webapp/logs/vsearch.log', 'a') as logs:
+        print(req, res, file=logs)
+
+
 @app.route('/search4', methods=['GET', 'POST'])
 def do_search() -> 'html':
+    ''' Extrai os dados postados no formulário; executa a busca;
+        retorna os resultados '''
     phrase = request.form['phrase']
     letters = request.form['letters']
     title = 'Here are your results:'
     results = str(search4letters(phrase, letters))
+    log_request(request, results)
     return render_template('results.html',
                            the_phrase=phrase,
                            the_letters=letters,
                            the_results=results,
                            the_title=title,)
 
+@app.route('/viewlog')
+def view_log() -> str:
+    return
 
 @app.route('/')
 @app.route('/entry')
 def entry_page() -> 'html':
+    ''' Exibe este webapp em formato HTML '''
     return render_template('entry.html',
                            the_title='Welcome to search4letter on the web!')
 
