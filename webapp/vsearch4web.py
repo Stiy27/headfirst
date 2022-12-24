@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, escape
 from vsearch import search4letters
 
 app = Flask(__name__)
@@ -12,7 +12,8 @@ app = Flask(__name__)
 def log_request(req: 'flask_request', res: str) -> None:
     ''' Criar/Salva logs de requisição e resultados '''
     with open('webapp/logs/vsearch.log', 'a') as logs:
-        print(req, res, file=logs)
+        print(req.form, req.remote_addr,
+              req.user_agent, res, file=logs, sep=' | ')
 
 
 @app.route('/search4', methods=['GET', 'POST'])
@@ -30,9 +31,6 @@ def do_search() -> 'html':
                            the_results=results,
                            the_title=title,)
 
-@app.route('/viewlog')
-def view_log() -> str:
-    return
 
 @app.route('/')
 @app.route('/entry')
@@ -40,6 +38,16 @@ def entry_page() -> 'html':
     ''' Exibe este webapp em formato HTML '''
     return render_template('entry.html',
                            the_title='Welcome to search4letter on the web!')
+
+
+@app.route('/viewlog')
+def view_the_log() -> str:
+    ''' Exibe o conteúdo do log na página '''
+    with open('webapp/logs/vsearch.log') as log:
+        # read() lé o arquivo todo de uma só vez
+        contents = log.read()
+    # "escape" do flask, converte e exibe os caracteres especiais
+    return escape(contents)
 
 
 # Permite executar app.run localmente, mas impede que AythonAnywhere o execute
